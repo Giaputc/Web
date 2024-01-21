@@ -1,58 +1,188 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đón Chào Năm Mới</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #ffc0cb; /* Hồng tình yêu */
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            overflow: hidden;
         }
 
-        .container {
-            text-align: center;
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        #welcomeContainer {
+            max-width: 80%;
+            margin: 50px auto;
             padding: 20px;
+            background-color: hsl(0, 0%, 100%);
             border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 2s ease-in-out;
         }
 
-        h1 {
+        #welcomeText {
+            font-size: 2em;
             color: #3498db;
+            animation: bounce 1s ease-in-out infinite alternate;
         }
 
-        p {
-            color: #555;
-            line-height: 1.6;
+        #heartContainer {
+            margin-top: 20px;
+            animation: heartbeat 1s ease-in-out infinite alternate;
         }
 
-        button {
-            background-color: #3498db;
-            color: #fff;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        #arrowHeart {
+            width: 100px;
+            transform: rotate(-45deg);
+            margin-bottom: -15px; /* Điều chỉnh vị trí */
         }
 
-        button:hover {
-            background-color: #297fb8;
+        #happyNewYear {
+            color: #ccbf2e; /* Xanh */
+            font-size: 1.5em;
+            margin-top: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        #bottomImage {
+            margin-top: 20px;
+        }
+
+        #gifImage {
+            max-width: 70%; /* Kích thước tối đa là 100% của container */
+            height: auto; /* Giữ tỷ lệ khung hình */
+        }
+
+        #happyNewYear2 {
+            color: hsl(49, 97%, 46%); /* Xanh */
+            font-size: 1.5em;
+            margin-top: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounce {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes heartbeat {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.2);
+            }
         }
     </style>
-    <title>Beautiful Webpage</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to a Beautiful Webpage</h1>
-        <p>This is a simple and elegant webpage created with HTML and CSS.</p>
-        <button>Get Started</button>
+
+    <canvas id="fireworks"></canvas>
+
+    <div id="welcomeContainer">
+        <h1 id="welcomeText">Chúc mừng năm mới 2024!</h1>
+        <div id="heartContainer">
+            
+        </div>
+        <div id="bottomImage">
+            <img src="https://media.giphy.com/media/KztT2c4u8mYYUiMKdJ/giphy.gif" alt="Ảnh dưới cùng">
+        </div>
+        <div id="happyNewYear">Bé Mai mèo năm mới càng lớn, càng xinh, càng học giỏi nha!</div>
+        <div id="happyNewYear2"> Năm mới có nhiều lì xì  hihi </div>
     </div>
+
+    <script>
+        // Fireworks
+        var canvas = document.getElementById("fireworks");
+        var ctx = canvas.getContext("2d");
+
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function Firework() {
+            this.x = Math.random() * canvas.width;
+            this.y = canvas.height;
+            this.sx = random(-2, 2);
+            this.sy = random(-12, -8);
+            this.color = "hsl(" + random(0, 360) + ", 100%, 50%)";
+            this.radius = random(2, 4);
+            this.life = true;
+        }
+
+        Firework.prototype.update = function() {
+            this.x += this.sx;
+            this.y += this.sy;
+            this.sy += 0.2;
+
+            if (this.radius > 0.2) {
+                this.radius -= 0.1;
+            } else {
+                this.life = false;
+            }
+        };
+
+        Firework.prototype.draw = function() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        };
+
+        var fireworks = [];
+
+        function createFirework() {
+            var firework = new Firework();
+            fireworks.push(firework);
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            createFirework();
+
+            for (var i = 0; i < fireworks.length; i++) {
+                fireworks[i].update();
+                fireworks[i].draw();
+
+                if (!fireworks[i].life) {
+                    fireworks.splice(i, 1);
+                    i--;
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+
 </body>
 </html>
